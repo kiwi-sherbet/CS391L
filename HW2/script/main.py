@@ -42,9 +42,9 @@ def load_data(file_name):
         return pickle.load(f)
 
 
-def load_Data():
+def load_Sounds():
 
-    url = 'http://https://www.cs.utexas.edu/~dana/MLClass/'
+    url = 'https://www.cs.utexas.edu/~dana/MLClass/'
     files = ['sounds.mat', 'icaTest.mat']
 
     path = os.path.join(PATH_DATA, 'sounds')
@@ -55,68 +55,10 @@ def load_Data():
             urlretrieve(url + file, os.path.join(path, file))
             print("Downloaded %s to %s" % (file, path))
 
-    def _sounds(path):
+    sound_set = loadmat(os.path.join(path, files[0]))
+    test_matrics = loadmat(os.path.join(path, files[1]))
 
-        return loadmat(path)["sounds"]
-
-    # def _labels(path):
-    #     with gzip.open(path) as f:
-    #         integer_labels = np.frombuffer(f.read(), 'B', offset=8)
-
-    #     def _onehot(integer_labels):
-    #         n_rows = len(integer_labels)
-    #         n_cols = integer_labels.max() + 1
-    #         onehot = np.zeros((n_rows, n_cols), dtype='uint8')
-    #         onehot[np.arange(n_rows), integer_labels] = 1
-    #         return onehot
-
-    #     return _onehot(integer_labels)
-
-    train_set = {}
-    test_set = {}
-    
-    train_set["sounds"] = _sounds(os.path.join(path, files[0]))
-    # train_set["labels"] = _labels(os.path.join(path, files[1]))
-    test_set["sounds"] = _sounds(os.path.join(path, files[2]))
-    # test_set["labels"] = _labels(os.path.join(path, files[3]))
-
-    return train_set, test_set
-
-
-def reduce_set(set, size):
-
-    if set["images"].shape[0] > size:
-
-        reduced_set = {}
-        reduced_set["images"] = set["images"][:size]
-        reduced_set["labels"] = set["labels"][:size]
-
-        return reduced_set
-
-    else:
-        return copy.copy(set)
-
-
-
-def find_eigen_vecs(inputs):
-
-    nums, pixels = inputs.shape
-    means = np.mean(inputs, axis=0)
-    vecs = inputs - means
-
-    covs = (vecs.T @ vecs)/nums
-
-    eig_vals, eig_vecs = np.linalg.eig(covs)
-
-    return eig_vals, eig_vecs
-
-
-def find_KNNs(target_vec, sample_vecs, K):
-
-    dists = np.linalg.norm(target_vec-sample_vecs, axis=1)
-    k_args = np.argpartition(dists, K)
-
-    return k_args
+    return sound_set, test_matrics
 
 
 class PCA_model():
