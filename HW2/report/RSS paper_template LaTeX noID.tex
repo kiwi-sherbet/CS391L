@@ -82,63 +82,53 @@ We use the maximum likelihood estimate to find $\hat{W}$, an estimate of $W$, an
 
 
 \subsection{Maximum Likelihood Estimation}
-There are several methods available in literature that can be used to calculate the unmixing matrix $W$, \cite{} for example uses a SVD (singular value decomposition) methods to calculate the matrix W. There are advantages and disadvantages to the available approaches. For example, the SVD approach involves calculation of the Eigenvalues of $XX^T$ which may be slow if the number of microphone inputs (m) is large.
-The Maximum Likelihood Estimate (MLE) of $W$ is calculated by maximizing the parameters of W to match the mixed data X. To do this, the following definition is used for the likelihood of the mixture X:
 
+Computing the unmixing matrix $W$ can be implemented by the singular value decomposition (SVD) which requires computation of the Eigenvalues of $XX^T$, which slows down the speed at large sample recordings $m$.
+On the other hand, the Maximum Likelihood Estimation (MLE) method can be used to find the optimal unmixing $W$ that maximize an optimization criteria $L(W)$ to match the mixed signals $X$.
+
+As a criteria  $L(W)$, the following likelihood is used.
 \begin{equation}
-    p(x=X) = p_x(X) = p_u(U)\cdot|W| = \prod_{i=1}p_i(u_i)|W|    
+\begin{aligned}
+     p_x(X) &= p_u(U)\cdot|W| \\
+    & = \prod_{i=1}p_i(u_i)|W|    
+\end{aligned}
 \end{equation}
-
-where, $p_u(U)$ is the probability density function of the independent source signals, and $p_i(u_i)$ is the probability density of the $i_{th}$ source component\\
-
-Since we have $t$ samples of all mixtures in X, we can calculate $P_x(X)$ as:
-
-
+Here, $p_u(U)$ is the probability density function (PDF) of the source signals, and $p_i(u_i)$ is the probability density of the $i_{th}$ source component.
+Then, we can rewrite $p_x(X)$ in terms of $t$ mixed samples $x_j: X= \left[x_1, ... , x_t \right]$ and use it as the optimization criteria, as
 \begin{equation}
-    L(W) = \prod_{j=1}^t\prod_{i=1}^np_i(w_i^Tx_j)|W|
+\begin{aligned}
+    L(W) = p_x(X) =  \prod_{j=1}^t\prod_{i=1}^np_i(w_i^Tx_j)|W|.
     \label{eq:likelihood def}
+\end{aligned}
 \end{equation}
-where, $x_j$ is the $j^{th}$ column of X.\\
-Thus our goal is to maximize $L(W)$ over all $W$, i.e.:
-\begin{equation}
-    \max_{W\epsilon R^{(n,m)}} L(W)
-    \label{eq:optimality-eqn}
-\end{equation}
-Given that the probability density function is always positive, we can maximize $L(W)$ by maximizing the log likelihood function. The reason for maximizing log likelihood is because, taking log of $L(W)$ changes the product terms in $W$ into summation terms, i.e.:
 
-\begin{eqnarray}
-    \ln{(L(W))} =& \sum_{j=1}^t\sum_{i=1}^n\ln{(p_i(w_i^Tx_j)|W|)}&\\
-     =& \sum_{j=1}^t\sum_{i=1}^n\ln{(p_i(w_i^Tx_j)}& + \sum_{i=1}^n\ln(|W|)\\
-     \therefore \ln{(L(W))} =& \sum_{j=1}^t\sum_{i=1}^n\ln{(p_i(w_i^Tx_j)}& + t\ln{(|W|)}
-     \label{eq:simplified loglike}
-\end{eqnarray}
-We can simplify equation \ref{eq:simplified loglike} further as:
+From the property that PDF is always positive, we can take log of $L(W)$ to changes the product terms in $W$ into summation terms, as
 \begin{equation}
-    \frac{1}{t}\ln{(L(W))} = E\left[\sum_{i=1}^n\ln{(p_i(w_i^Tx_j))}\right] + \ln{(|W|)}
+\begin{aligned}
+    \ln{(L(W))} 
+     &= \sum_{j=1}^t\sum_{i=1}^n\ln{(p_i(w_i^Tx_j)|W|)}\\
+     &= \sum_{j=1}^t\sum_{i=1}^n\ln{(p_i(w_i^Tx_j)} + \sum_{i=1}^n\ln(|W|)\\
+     &= \sum_{j=1}^t\sum_{i=1}^n\ln{(p_i(w_i^Tx_j)} + t\ln{(|W|)},
+     \label{eq:simplified loglike}
+\end{aligned}
+\end{equation}
+which is called {\it log likelihood}. Here, we can maximize $L(W)$ by maximizing the log likelihood. Further, we can rewrite Equation \ref{eq:simplified loglike}, as
+\begin{equation}
+    \frac{1}{t}\ln{(L(W))} = E\left[\sum_{i=1}^n\ln{(p_i(w_i^Tx_j))}\right] + \ln{(|W|)}.
     \label{eq:log-like-Exp}
 \end{equation}
-where E[] is the expectation/mean observation. \\
-Here we introduce the concept of the cumulative density function (cdf). The cumulative density function $g(X)$ is the integral of the pdf, and gives the net probability of the function having a value below X. Thus the pdf $p(X)$ is simply the derivative of $g(X)$. Thus equation \ref{eq:log-like-Exp} becomes,\\
+Let $g(X)$ be the cumulative density function (CDF) of the PDF $p_x(X)$.
+The CDF $g(X)$ is the integral of $p_x(X)$, so $p(X)$ is the derivative of $g(X)$, as
 \begin{equation}
-    \frac{1}{t}\ln{(L(W))} = E\left[\ln{(g'(WX)}\right] + \ln{(|W|)}
+    \frac{1}{t}\ln{(L(W))} = E\left[\ln{(g'(WX)}\right] + \ln{(|W|)}.
     \label{eq:log-like-Exp-cdf} 
-\end{equation}
-
-There are many algorithms that are available for maximizing the the log-likelihood function. Gradient descent algorithm is a popular approach to maximize $L(W)$. Since we maximize with respect to W, the gradient is taken accordingly, i.e.:
-\begin{equation}
-\label{eq:grad}
-\begin{aligned}
-    \frac{1}{t}\frac{\partial}{\partial W}\ln(L(W)) \\
-    = E\left[\frac{\partial}{\partial W}(\ln{(g'(WX)})X^T\right] + \frac{\partial}{\partial W}\ln{(|W|)} \\
-    = E\left[\frac{\partial}{\partial W}(\ln{(g'(WX)})X^T\right] + \left[W^T\right]^{-1}
-\end{aligned}
 \end{equation}
 
 
 \subsection{Gradient Descent}
 The gradient descent method is an iterative algorithm to find a function's minimum or maximum points. If the convex function is convex, the gradient descent converges to the global extremums. Otherwise, it converges to the local extremums. Proving the convexity of the log likelihood $L(W)$ is beyond the scope of this report, so it is not described in this report.
 
-Gradient descent starts at an initial point $\hat{W}_0$ and updates it by moving to next points recursively along the gradient computed at previous points. To formulate the gradient descent method in terms of $W$, the estimate $\hat{W}_{k}$ of the $W$ matrix after the $k^{th}$ iteration is given as, 
+Gradient descent starts at an initial point $\hat{W}_0$ and updates it by moving to next points recursively along the gradient computed at previous points. To formulate the gradient descent method in terms of $W$, the estimate $\hat{W}_{k}$ of the $W$ matrix after the $k^{th}$ iteration is given, as 
 \begin{equation}
 \begin{aligned}
     \hat{W}_{k+1} &= \hat{W}_k + \eta\cdot\left(\frac{1}{t}\frac{\partial}{\partial W}\ln(L(W))\right)_{W=\hat{W}_k}\\
@@ -148,7 +138,15 @@ Gradient descent starts at an initial point $\hat{W}_0$ and updates it by moving
 where $\eta$ is the {\it learning rate} of the gradient descent.
 Here, the initial point $\hat{W}_0$ is given randomly, and $\eta$ should be adjusted to acheive convergence.
 
-From Equation \ref{eq:grad}, the gradient term contains $\left[W^T\right]^{-1}$ which requires expensive computation for the inverse operation. 
+From Equation \ref{eq:log-like-Exp}, we can compute the gradient of $L(W)$, as
+\begin{equation}
+\begin{aligned}
+    \frac{1}{t}\frac{\partial}{\partial W}\ln(L(W)) 
+    &= E\left[\frac{\partial}{\partial W}(\ln{(g'(WX)})X^T\right] + \frac{\partial}{\partial W}\ln{(|W|)} \\
+    &= E\left[\frac{\partial}{\partial W}(\ln{(g'(WX)})X^T\right] + \left[W^T\right]^{-1}.
+\end{aligned}
+\end{equation}
+Here, the gradient term contains $\left[W^T\right]^{-1}$ which requires expensive computation for the inverse operation. 
 Thus, we process the interation by multiplying it with $W^TW$, which preservers the convergence to the optimum, and avoids the inverse operation, as
 \begin{equation}
 \begin{aligned}
@@ -161,7 +159,7 @@ Thus, we process the interation by multiplying it with $W^TW$, which preservers 
 \end{equation}
 The above formulation does not affect the  optimality of equation \ref{eq:optimality-eqn}. Decription for this is omitted for brevity of this report, and we encourage to refer the class notes.
 
-To facilitate the gradient descent algorithm, we need to choose a globally differentiable $cdf$. In particular, we used the following $cdf$,
+To facilitate the gradient descent algorithm, we need to choose a globally differentiable CDF. In particular, we used the following CDF,
 \begin{equation}
     g(WX) = \frac{1}{1+e^{-WX}}.
 \end{equation}
@@ -175,7 +173,7 @@ Inserting Equation \ref{eq:deriv} into Equation \ref{eq:delta W simplified} yiel
     \Delta W = \left(\left(E\left[(1-2g(WX))(WX)^T\right] + I \right)W\right)_{W=\hat{W}_k}.
 \end{equation}
 
-To summarize the processes described above, the algorithm is implemented as:
+To summarize the processes described above, the algorithm is implemented, as
 \begin{enumerate}
     \item Start with an intial point $\hat{W}_0$.  
     \item Compute matrix $Z_k = g(\hat{W}_kX)$
