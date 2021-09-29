@@ -7,6 +7,7 @@
 \usepackage[bookmarks=true]{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath,amsfonts,amssymb}
+\usepackage{hyperref}
 
 \graphicspath{ {./graphics/} }
 
@@ -59,6 +60,7 @@ We also studied the effects of parameters on the model's performance. The answer
 \label{sec:method}
 
 \subsection{Mixing matrix}
+
 In this assignment, a test data set $U$ containing $5$ sound sources and $t$ number of samples is given. We aim to mix $n$ sources from the given sounds to generate a pseudo microphone output $X$ of $m$ recordings where $m\geq n$. To do this, we introduce a mixing matrix $A$, as
 \begin{equation}
     X = AU
@@ -125,7 +127,8 @@ The CDF $g(X)$ is the integral of $p_x(X)$, so $p(X)$ is the derivative of $g(X)
 \end{equation}
 
 
-\subsection{Gradient Descent}
+\subsection{Gradient descent}
+
 The gradient descent method is an iterative algorithm to find a function's minimum or maximum points. If the convex function is convex, the gradient descent converges to the global extremums. Otherwise, it converges to the local extremums. Proving the convexity of the log likelihood $L(W)$ is beyond the scope of this report, so it is not described in this report.
 
 Gradient descent starts at an initial point $\hat{W}_0$ and updates it by moving to next points recursively along the gradient computed at previous points. To formulate the gradient descent method in terms of $W$, the estimate $\hat{W}_{k}$ of the $W$ matrix after the $k^{th}$ iteration is given, as 
@@ -185,9 +188,13 @@ To summarize the processes described above, the algorithm is implemented, as
 
 \section{Results} % Describe the methods you intend to apply to solve the given problem
 
-The classifier model of PCA and KNN methods described in Section \ref{sec:method} is implemented python scripts (3.8.5).
+The ICA implementation of using MLE and gradient descent described in Section \ref{sec:method} is implemented under the environment of python scripts (3.8.5) and numpy (1.17.5). The model is trained and evaluated by the sound dataset from the class website \cite{cs391}. In this evaluate the performance of the model, correlation between original signals and recovered signals 
 
-\subsection{Model Training}
+\subsection{Model training}
+
+To measure the effectiveness of our implementation of ICA in recovering the original signal, we calculated the correlation between the source signals and the recovered signals and performed a matching so that the highest average correlation would be achieved but every signal would be matched with another. We used random mixes of the source signals and initialized W0 to be random matrices with entries in [0, 0.1).
+We evaluated our ICA implementation on mixes of 3, 4, and 5 signals. For each mix of signals, we performed ICA with different batch sizes for each step. Starting from using one sample to update Wi in each iteration (stochastic gradient ascent) and then increasing to use 16, 32, 64, and 128 samples per iteration. These samples were chosen randomly from X at each iteration.
+
 We trained with the first 1000 samples of the training set, and the result eigenvalues are presented in descending order in Fig. \ref{fig:eig_vals}.
 The eigenvectors of the principal components are presented in Fig. \ref{fig:eig_vecs}.
 For evaluation of the model, we chose the principal component $M=15$ and KNN size $K=5$, and the model achieves an accuracy of 84.35 \%.
@@ -201,7 +208,7 @@ There is trade-off in using a larger training sample size: the accuracy increase
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{source3/batch_test.png}	
+	\includegraphics[width=3.6in]{batch_test.png}	
 	\caption{Accuracy and computation time changes on training sample size: training sample sizes are chosen in [300, 500, 1000, 5000, 10000, 30000, 60000].}
 	\label{fig:batch_test}
 \end{figure}
@@ -215,14 +222,29 @@ The accuracy for inferring worsens as KNN size increases, the computation time d
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{source3/eta_test.png}	
+	\includegraphics[width=3.6in]{eta_test.png}	
 	\caption{Accuracy and computation time changes on KNN sizes: KNN sizes are chosen in [1, 3, 5, 10, 25].}
 	\label{fig:eta_test}
 \end{figure}
 
 
 
+\subsection{Sample size}
+
+The plot of the accuracy of with different KNNs is presented in Fig. \ref{fig:knn_test}.
+In the experiment, we used $M=24$, and 1000 training samples.
+The accuracy for inferring worsens as KNN size increases, the computation time does not change much.
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.6in]{sample_test.png}	
+	\caption{Accuracy and computation time changes on KNN sizes: KNN sizes are chosen in [1, 3, 5, 10, 25].}
+	\label{fig:eta_test}
+\end{figure}
+
+
 \section{Summary} %Intermediate/Preliminary Results: State and evaluate your results upeto the milestone
+
 The classifier method of PCA and KNN for classifying digit character images are implemented in the assignment. For evaluation, we used the MNIST dataset. From the results of the experiments, a smaller KNN size benefits the accuracy. However, for the PCA size, the accuracy peaked at $M=50$, This implies that enough number of feature is required for estimation but too many features distract the proper labels, which worsen the accuracy. On the other hand, a larger training size yields higher accuracy but also requires higher computation power.
 
 

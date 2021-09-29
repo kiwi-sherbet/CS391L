@@ -3,44 +3,47 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: RSS paper_template LaTeX noID.aux
 The style file: plainnat.bst
 Database file #1: references.bib
+Warning--to sort, need author or key in cs391
+Warning--empty year in cs391
 You've used 1 entry,
             2773 wiz_defined-function locations,
-            600 strings with 4994 characters,
-and the built_in function-call counts, 489 in all, are:
-= -- 44
-> -- 21
-< -- 1
-+ -- 7
-- -- 6
-* -- 39
-:= -- 78
-add.period$ -- 3
+            596 strings with 4964 characters,
+and the built_in function-call counts, 273 in all, are:
+= -- 23
+> -- 0
+< -- 0
++ -- 1
+- -- 0
+* -- 18
+:= -- 29
+add.period$ -- 2
 call.type$ -- 1
-change.case$ -- 5
+change.case$ -- 3
 chr.to.int$ -- 1
-cite$ -- 2
-duplicate$ -- 20
-empty$ -- 41
-format.name$ -- 9
-if$ -- 97
+cite$ -- 5
+duplicate$ -- 15
+empty$ -- 36
+format.name$ -- 0
+if$ -- 60
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 1
-newline$ -- 13
-num.names$ -- 4
-pop$ -- 8
+missing$ -- 0
+newline$ -- 12
+num.names$ -- 0
+pop$ -- 14
 preamble$ -- 1
-purify$ -- 4
+purify$ -- 2
 quote$ -- 0
-skip$ -- 17
+skip$ -- 15
 stack$ -- 0
-substring$ -- 27
+substring$ -- 3
 swap$ -- 1
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 11
-warning$ -- 0
-while$ -- 5
+warning$ -- 2
+while$ -- 0
 width$ -- 0
-write$ -- 20
+write$ -- 16
+(There were 2 warnings)

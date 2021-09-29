@@ -5,9 +5,8 @@
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Cortes and Vapnik(1995)]{cortes1995support}
-Corinna Cortes and Vladimir Vapnik.
-\newblock Support-vector networks.
-\newblock \emph{Machine learning}, 20\penalty0 (3):\penalty0 273--297, 1995.
+\bibitem[cs3()]{cs391}
+Machine learning.
+\newblock URL \url{https://www.cs.utexas.edu/~dana/MLClass/}.
 
 \end{thebibliography}
