@@ -39,19 +39,16 @@ Email: mingyo@utexas.edu}}
 \IEEEpeerreviewmaketitle
 
 \begin{abstract}
-
-In this assignment, an overview of Independent Component Analysis (ICA) is presented and is applied to separate a mixture of sounds. A set of 5 different sources were taken and mixed to obtain a 5 different "microphone" recordings. The ICA algorithm was applied to retrieve the individual sounds and the retrieval quality was examined.
+In this assignment, an overview of Independent Component Analysis (ICA) is presented and is applied to separate a mixture of sounds. We used a dataset of 5 different sources and mixed signals to generate multiple simulated "microphone" sounds. The ICA method was applied with Maximum Likelihood Estimation (MLE) and gradient descent to extract the individual sounds, and the separating performance was evaluated.
 \end{abstract}
 
 \section{Introduction} % Introduce your problem and the overall plan for approaching your problem
 
-The problem of seperating a certain signal from a mixture of multiple signals can be applied to many areas. The simplest example of this problem is the cocktail party problem where we have recordings from different microphones of the same mixture of conversations.
+The problem of separating a certain signal from a mixture of multiple signals can be applied to many areas. The simplest example of this is the cocktail party problem, where we have recordings from different microphones of the same mixture of conversations.
 In this paper, in particular, we implemented an ICA to seperate voices from the mixture of conversations. 
 We also studied the effects of parameters on the model's performance. The answers to the HW2 questions are included in the following sections.\begin{itemize}
-\item Fig. \ref{fig:base}: Visualization of base source sounds
-\item Fig. \ref{fig:mixed}: Visualization of mixed source sounds
-\item Fig. \ref{fig:recovered}: Visualization of recovered source sounds
-\item Fig. \ref{fig:batch_test}, \ref{fig:eta_test}: Correlation between orignal and recovered sounds
+\item Fig. \ref{fig:signal}: Visualization of base, mixed, recovered signals
+\item Fig. \ref{fig:basic_test}, \ref{fig:basic_abs_test}, \ref{fig:batch_abs_test}, \ref{fig:eta_abs_test}, \ref{fig:sample_abs_test}: Correlation between source and recovered signals
 \end{itemize}
 
 
@@ -85,8 +82,8 @@ We use the maximum likelihood estimate to find $\hat{W}$, an estimate of $W$, an
 
 \subsection{Maximum Likelihood Estimation}
 
-Computing the unmixing matrix $W$ can be implemented by the singular value decomposition (SVD) which requires computation of the Eigenvalues of $XX^T$, which slows down the speed at large sample recordings $m$.
-On the other hand, the Maximum Likelihood Estimation (MLE) method can be used to find the optimal unmixing $W$ that maximize an optimization criteria $L(W)$ to match the mixed signals $X$.
+Computing the unmixing matrix $W$ can be implemented by the singular value decomposition (SVD), which requires the computation of the Eigenvalues of $XX^T$, which slows down the speed at a large number of sample recordings $m$.
+On the other hand, the Maximum Likelihood Estimation (MLE) method can be used to find the optimal unmixing $W$ that maximizes optimization criteria $L(W)$ to match the mixed signals $X$.
 
 As a criteria  $L(W)$, the following likelihood is used.
 \begin{equation}
@@ -139,7 +136,7 @@ Gradient descent starts at an initial point $\hat{W}_0$ and updates it by moving
 \end{aligned}
 \end{equation}
 where $\eta$ is the {\it learning rate} of the gradient descent.
-Here, the initial point $\hat{W}_0$ is given randomly, and $\eta$ should be adjusted to acheive convergence.
+Here, the initial point $\hat{W}_0$ is given randomly, and $\eta$ should be adjusted to achieve convergence.
 
 From Equation \ref{eq:log-like-Exp}, we can compute the gradient of $L(W)$, as
 \begin{equation}
@@ -160,7 +157,7 @@ Thus, we process the interation by multiplying it with $W^TW$, which preservers 
     \label{eq:delta W simplified}
 \end{aligned}
 \end{equation}
-The above formulation does not affect the  optimality of equation \ref{eq:optimality-eqn}. Decription for this is omitted for brevity of this report, and we encourage to refer the class notes.
+The above formulation does not affect the optimality of Equation \ref{eq:simplified loglike}. The description for this is omitted for brevity of this report, and we encourage referring to the class notes.
 
 To facilitate the gradient descent algorithm, we need to choose a globally differentiable CDF. In particular, we used the following CDF,
 \begin{equation}
@@ -188,67 +185,92 @@ To summarize the processes described above, the algorithm is implemented, as
 
 \section{Results} % Describe the methods you intend to apply to solve the given problem
 
-The ICA implementation of using MLE and gradient descent described in Section \ref{sec:method} is implemented under the environment of python scripts (3.8.5) and numpy (1.17.5). The model is trained and evaluated by the sound dataset from the class website \cite{cs391}. In this evaluate the performance of the model, correlation between original signals and recovered signals 
-
-\subsection{Model training}
-
-To measure the effectiveness of our implementation of ICA in recovering the original signal, we calculated the correlation between the source signals and the recovered signals and performed a matching so that the highest average correlation would be achieved but every signal would be matched with another. We used random mixes of the source signals and initialized W0 to be random matrices with entries in [0, 0.1).
-We evaluated our ICA implementation on mixes of 3, 4, and 5 signals. For each mix of signals, we performed ICA with different batch sizes for each step. Starting from using one sample to update Wi in each iteration (stochastic gradient ascent) and then increasing to use 16, 32, 64, and 128 samples per iteration. These samples were chosen randomly from X at each iteration.
-
-We trained with the first 1000 samples of the training set, and the result eigenvalues are presented in descending order in Fig. \ref{fig:eig_vals}.
-The eigenvectors of the principal components are presented in Fig. \ref{fig:eig_vecs}.
-For evaluation of the model, we chose the principal component $M=15$ and KNN size $K=5$, and the model achieves an accuracy of 84.35 \%.
+The ICA implementation of using MLE and gradient descent described in Section \ref{sec:method} is implemented under the environment of python scripts (3.8.5) and numpy (1.17.5). The model is trained and evaluated by the sound dataset from the class website \cite{cs391}. We used random mixes of $n=3$ source signals from the dataset and initialized $W_0$ to be random matrices where each entry in $[0, 1]$.
 
 
-\subsection{Batch size}
+\subsection{Signal restoration}
 
-The plot of accuracy of with different number of trainign samples is presented in Fig. \ref{fig:sample_test}.
-In the experiment, we used $M=24$, and $K=5$.
-There is trade-off in using a larger training sample size: the accuracy increases as a training sample size increases but computation time also increases linearly.
+In the assignment, the performance of the model is evaluated by correlation between original signals and recovered signals. We paired a restored signal with the orignal signal that has the largest magnitude of correlation. In the experiment, we used $n=3$, $m=3$, $\eta=0.01$, $t=16$ and the maximum interation $k_{\text{max}} = 5000$.
+
+The source signals, the mixed signals, and the restored signals after $k_{\text{max}}$ are presented in Fig. \ref{fig:signal}.
+The plot of correlation between the source signals and the restored signals is presented in Fig. \ref{fig:basic_test}.
+
+Due to the semi-symmetric nature of waves, the largest correlation of Signal \#3 became negative, which implies that the extracted signal has the opposite phase of the original source signals. We use the plot of absolute correlation as Fig. \ref{fig:basic_abs_test} and find that correlation increase as an iteration number increases. For readability, we use absolute correlation for analyzing the effectiveness of the model in the following subchapters. Also, we can find that each source signal matches with the paired signals, which implies the ICA model successfully extracts original signals from mixed signals.
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{batch_test.png}	
-	\caption{Accuracy and computation time changes on training sample size: training sample sizes are chosen in [300, 500, 1000, 5000, 10000, 30000, 60000].}
-	\label{fig:batch_test}
+	\includegraphics[width=3.6in]{original.png}	
+	\includegraphics[width=3.6in]{mixed.png}	
+	\includegraphics[width=3.6in]{restored.png}	
+	\caption{Visualization of the signals: (upper) orignal signals, (middle) mixed signals, and (bottom) restored signals}
+	\label{fig:signal}
+\end{figure}
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.6in]{basic_test.png}	
+	\caption{Correlation between each source signal and the corresponding the restored signal.}
+	\label{fig:basic_test}
+\end{figure}
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.6in]{basic_abs_test.png}	
+	\caption{Correlation between each source signal and the corresponding the restored signal.}
+	\label{fig:basic_abs_test}
+\end{figure}
+
+\subsection{Batch size}
+
+The plot of absolute correlation at different batch sizes $t$ is presented in Fig. \ref{fig:batch_abs_test}.
+In the experiment, we used $n=3$, $m=3$, $\eta=0.01$, and $k_{\text{max}} = 5000$.
+From the results, we can find that the correlation increases fastest at the batch size $k=32$. In a larger batch size, there is a negligible drop at the speed of correlation magnitude increases. On the other hand, a batch size causes a significant drop, which implies that the model suffers from a lack of sample information.
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.6in]{batch_abs_test.png}	
+	\caption{Absolute correlation changes on batch size: batch sample sizes are chosen in [4, 8, 16, 32, 64, 128, 256].}
+	\label{fig:batch_abs_test}
 \end{figure}
 
 
 \subsection{Learning rate}
 
-The plot of the accuracy of with different KNNs is presented in Fig. \ref{fig:knn_test}.
-In the experiment, we used $M=24$, and 1000 training samples.
-The accuracy for inferring worsens as KNN size increases, the computation time does not change much.
+The plot of absolute correlation at different learning rates $\eta$ is presented in Fig. \ref{fig:eta_abs_test}.
+In the experiment, we used $n=3$, $m=3$, $t=16$, and $k_{\text{max}} = 5000$.
+From the results, we can find that a higher learning rate yields faster. However, an excessively high learning rate prevents the convergence at gradient descent, which causes unstable performance, such as perturbations in correlation remaining even after enough iterations.
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{eta_test.png}	
-	\caption{Accuracy and computation time changes on KNN sizes: KNN sizes are chosen in [1, 3, 5, 10, 25].}
-	\label{fig:eta_test}
+	\includegraphics[width=3.6in]{eta_abs_test.png}	
+	\caption{Absolute correlation changes on learning rate: learning rates are chosen in [0.005, 0.01, 0.02, 0.05, 0.1, 0.2].}
+	\label{fig:eta_abs_test}
 \end{figure}
 
 
 
 \subsection{Sample size}
 
-The plot of the accuracy of with different KNNs is presented in Fig. \ref{fig:knn_test}.
-In the experiment, we used $M=24$, and 1000 training samples.
-The accuracy for inferring worsens as KNN size increases, the computation time does not change much.
+The plot of absolute correlation at different sample signal numbers $m$ is presented in Fig. \ref{fig:sample_abs_test}.
+In the experiment, we used $n=3$, $t=16$, $\eta=0.01$, and $k_{\text{max}} = 5000$.
+From the result at $m=2$, we can find that the model fails to restore Signal \#1. This implies that a smaller sample number than the given source signal number, $m<n$, causes the dimension issue at the unmixing $W$, where the model cannot fully extract the original signals.
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{sample_test.png}	
-	\caption{Accuracy and computation time changes on KNN sizes: KNN sizes are chosen in [1, 3, 5, 10, 25].}
-	\label{fig:eta_test}
+	\includegraphics[width=3.6in]{sample_abs_test.png}	
+	\caption{Absolute correlation changes on sample sizes: sample sizes are chosen in [2, 3, 4, 5].}
+	\label{fig:sample_abs_test}
 \end{figure}
 
 
 \section{Summary} %Intermediate/Preliminary Results: State and evaluate your results upeto the milestone
 
-The classifier method of PCA and KNN for classifying digit character images are implemented in the assignment. For evaluation, we used the MNIST dataset. From the results of the experiments, a smaller KNN size benefits the accuracy. However, for the PCA size, the accuracy peaked at $M=50$, This implies that enough number of feature is required for estimation but too many features distract the proper labels, which worsen the accuracy. On the other hand, a larger training size yields higher accuracy but also requires higher computation power.
-
-
-
+The ICA method with MLE and gradient descent for separating signals from mixed signals are implemented in the assignment. 
+For training, we mixed 5 source sounds of the dataset given at the class webpage and evaluated the model by analyzing the correlation between source signals and restored signals.
+From the results of the experiments, we can find the following properties.
+First, a small batch size suffers from a slow convergence speed.
+Second, there is a trade-off in using a higher learning rate: the convergence speed increases as a learning rate increases but the chance of unstable performance, such as oscillations in correlation, also increases.
+Finally, a smaller sample number than a source number fails at full restoration of source signals.
 %\section*{Acknowledgments}
 
 %% Use plainnat to work nicely with natbib. 

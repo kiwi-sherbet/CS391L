@@ -212,6 +212,7 @@ class ICA_model():
         plot_num = self.U.shape[0]
 
         plt.figure()
+        plt.rcParams.update({'font.size': 10})
 
         for idx in range(plot_num):
 
@@ -222,6 +223,7 @@ class ICA_model():
             plt.yticks([])
             plt.ylabel("Signal #{}".format(idx+1))
 
+        plt.xlabel("Source signals")
         plt.savefig("{}/original.png".format(PATH_PLOT))
 
         return
@@ -232,6 +234,7 @@ class ICA_model():
         plot_num = self.X.shape[0]
 
         plt.figure()
+        plt.rcParams.update({'font.size': 10})
 
         for idx in range(plot_num):
 
@@ -240,14 +243,15 @@ class ICA_model():
             plt.xticks([])
             plt.yticks([])
             plt.ylabel("Signal #{}".format(idx+1))
-
+    
+        plt.xlabel("Mixed signals")
         plt.savefig("{}/mixed.png".format(PATH_PLOT))
 
 
         return
         
 
-    def show_reconst_signals(self):
+    def show_restored_signals(self):
 
         U_res = self.W_i @ self.X
         _, indices = compute_correlation(self.U, U_res)
@@ -255,6 +259,7 @@ class ICA_model():
         plot_num = U_res.shape[0]
 
         plt.figure()
+        plt.rcParams.update({'font.size': 10})
 
         for idx in range(plot_num):
 
@@ -264,7 +269,8 @@ class ICA_model():
             plt.yticks([])
             plt.ylabel("Signal #{}".format(idx+1))
 
-        plt.savefig("{}/reconst.png".format(PATH_PLOT))
+        plt.xlabel("Restored signals")
+        plt.savefig("{}/restored.png".format(PATH_PLOT))
 
         return
 
@@ -326,7 +332,7 @@ if __name__ == "__main__":
     print("Batch tests are over.")
 
     eta_test = []
-    eta_size = [0.005, 0.01, 0.02, 0.05]
+    eta_size = [0.005, 0.01, 0.02, 0.05, 0.1, 0.2]
 
     for size in eta_size:
         time_init = time.time()
@@ -434,6 +440,35 @@ if __name__ == "__main__":
 
     model.show_original_signals()
     model.show_mixed_singals()
-    model.show_reconst_signals()
+    model.show_restored_signals()
+
+    plt.figure()
+    plt.rcParams.update({'font.size': 10})
+
+    for idx in range(SOUND_NUM):
+        plt.plot(10*np.arange(ITERATION_NUM/10), batch_test[2][:,idx], label = "Signal #"+str(idx+1))
+        plt.xlim([0, ITERATION_NUM])
+        plt.ylim([-1.05, 1.05])
+        plt.ylabel("Correlation")
+
+    plt.xlabel("Iteration")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("{}/basic_test.png".format(PATH_PLOT), dpi=300)
+
+
+    plt.figure()
+    plt.rcParams.update({'font.size': 10})
+
+    for idx in range(SOUND_NUM):
+        plt.plot(10*np.arange(ITERATION_NUM/10), np.abs(batch_test[2][:,idx]), label = "Signal #"+str(idx+1))
+        plt.xlim([0, ITERATION_NUM])
+        plt.ylim([-1.05, 1.05])
+        plt.ylabel("Absolute Correlation")
+
+    plt.xlabel("Iteration")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("{}/basic_abs_test.png".format(PATH_PLOT), dpi=300)
 
     print("Plotted saved data: batch-{}, eta-{}, mix-{}, sample-{}".format(BATCH_SIZE, ETA, SOUND_NUM, SAMPLE_NUM))
