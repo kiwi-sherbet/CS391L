@@ -1,0 +1,425 @@
+              
+                %% bare_jrnl.tex
+%% V1.4b
+%% 2015/08/26
+%% by Michael Shell
+%% see http://www.michaelshell.org/
+%% for current contact information.
+%%
+%% This is a skeleton file demonstrating the use of IEEEtran.cls
+%% (requires IEEEtran.cls version 1.8b or later) with an IEEE
+%% journal paper.
+%%
+%% Support sites:
+%% http://www.michaelshell.org/tex/ieeetran/
+%% http://www.ctan.org/pkg/ieeetran
+%% and
+%% http://www.ieee.org/
+
+%%*************************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% User assumes all risk.
+%% In no event shall the IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%
+%% This work is distributed under the LaTeX Project Public License (LPPL)
+%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
+%% distributed and modified. A copy of the LPPL, version 1.3, is included
+%% in the base LaTeX documentation of all distributions of LaTeX released
+%% 2003/12/01 or later.
+%% Retain all contribution notices and credits.
+%% ** Modified files should be clearly indicated as such, including  **
+%% ** renaming them and changing author support contact information. **
+%%*************************************************************************
+
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. The IEEE's font choices and paper sizes can   ***
+% *** trigger bugs that do not appear when using other class files.       ***                          ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+% Please refer to your journal's instructions for other
+% options that should be set.
+\documentclass[journal,onecolumn,12pt]{IEEEtran}
+%
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[journal]{../sty/IEEEtran}
+
+
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage{cite}
+\usepackage[pdftex]{graphicx}
+\usepackage{algorithmic}
+\usepackage{array}
+\usepackage{stfloats}
+\usepackage{amsfonts}
+\hyphenation{op-tical net-works semi-conduc-tor}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{CS391L HW3: Problem Set}
+
+
+\author{Mingyo Seo,\\UT EID: ms84662\\Email: mingyo@utexas.edu}
+
+
+
+
+
+% The paper headers
+
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+
+\section{Basic Probability}
+
+The {\bf answer} is $p(X|Y) = {{1}\over{73}}$. For the notation, please see the below description.
+
+Let $X$ be the case that it will actually rain today, and $Y$ be the case that the meterologist predicts a rainy day. In other words, $X^{c}$ means that it will not rain today. In the case of $Y^{c}$, the meterologist predicts that it would not rain today. From the given historical data, 
+\begin{equation}
+\begin{aligned}
+p(X)&={{5}\over{365}} &= {{1}\over{73}},
+\end{aligned}
+\label{eq:px}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+p(X^c)&=1-P(X) &= {{72}\over{73}}.
+\end{aligned}
+\label{eq:pxc}
+\end{equation}
+The meterologist correctly predicts 90\% when it rains, so
+\begin{equation}
+p(Y|X)={{9}\over{10}},
+\label{eq:pyx}
+\end{equation}
+The meterologist correctly predicts 10\% when it doesn’t rain, so
+\begin{equation}
+p(Y^c|X^c)={{1}\over{10}},
+\end{equation}
+This also implies that
+\begin{equation}
+\begin{aligned}
+p(Y|X^c)&=1- p(Y^c|X^c)&= {{9}\over{10}}.
+\label{eq:pyxc}
+\end{aligned}
+\end{equation}
+
+Given the condition that a meterologist predicts rain today, the conditional probability of rain today can be formulated as,
+\begin{equation}
+\begin{aligned}
+p(X|Y)&={{p(X, Y)}\over{p(Y)}}
+&= {{p(X, Y)}\over{p(X,Y)+p({X^c},Y)}}.
+\end{aligned}
+\label{eq:formulation}
+\end{equation}
+From Bayes' theorem, we can get 
+\begin{equation}
+\begin{aligned}
+p(X, Y)&={{p(Y|X)}{p(X)}},
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+p(X^c, Y)&={{p(Y|X^c)}{p(X^c)}}.
+\end{aligned}
+\end{equation}
+Therefore, from Equation \ref{eq:px}, \ref{eq:pxc}, \ref{eq:pyx}, \ref{eq:pyxc}, we can compute the probabilities,
+\begin{equation}
+\begin{aligned}
+p(X, Y)&={{9}\over{10}}\times{{1}\over{73}},
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+p(X^c, Y)&={{9}\over{10}}\times{{72}\over{73}}.
+\end{aligned}
+\end{equation}
+Therefore, we can compute the {\bf answer} by plugging these probabilities in \ref{eq:formulation}, as
+\begin{equation}
+\begin{aligned}
+p(X|Y)&= {{p(X, Y)}\over{p(X,Y)+p({X^c},Y)}}
+&= {{{{9}\over{10}}\times{{1}\over{73}}}\over{\left({{{9}\over{10}}\times{{1}\over{73}}}\right)+\left({{{9}\over{10}}\times{{72}\over{73}}}\right)}}
+&= {{1}\over{73}}.
+\end{aligned}
+\end{equation}
+
+\pagebreak
+\section{Entropy}
+From the definitions, 
+\begin{equation}
+\begin{aligned}
+H[\boldsymbol{y}] = - \int p(\boldsymbol{y}) \ln p(\boldsymbol{y}) dy,
+\end{aligned}
+\label{eq:hx}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+H[\boldsymbol{y}|\boldsymbol{x}] = - \int \int p(\boldsymbol{x},\boldsymbol{y}) \ln p(\boldsymbol{y}|\boldsymbol{x}) d\boldsymbol{y} d\boldsymbol{x}.
+\end{aligned}
+\label{eq:hxy}
+\end{equation}
+From Bayes' theorem, we can get 
+\begin{equation}
+\begin{aligned}
+p(\boldsymbol{y}|\boldsymbol{x})={{p(\boldsymbol{x},\boldsymbol{y})}\over{p(\boldsymbol{x})}},
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+p(\boldsymbol{x},\boldsymbol{y})={{p(\boldsymbol{x}|\boldsymbol{y})}{p(\boldsymbol{y})}}.
+\end{aligned}
+\end{equation}
+Therefore, we can re-write the given KL definition of mutual informaiton, as
+\begin{equation}
+\begin{aligned}
+I[\boldsymbol{x}, \boldsymbol{y}] &= - \int \int p(\boldsymbol{x}, \boldsymbol{y}) \ln \left\lbrace {{p(\boldsymbol{x}) p(\boldsymbol{y})}\over{p(\boldsymbol{x},\boldsymbol{y})}} \right\rbrace d\boldsymbol{x} d\boldsymbol{y}\\
+ &= - \int \int p(\boldsymbol{x}, \boldsymbol{y}) \ln { {p(\boldsymbol{y})} \over {p(\boldsymbol{y}|\boldsymbol{x})} } d\boldsymbol{x} d\boldsymbol{y}\\
+ &= - \int \int p(\boldsymbol{x}, \boldsymbol{y}) \left\lbrace \ln p(\boldsymbol{y}) - \ln  {p(\boldsymbol{y}|\boldsymbol{x})} \right\rbrace d\boldsymbol{x} d\boldsymbol{y}\\
+ &= - \int \int p(\boldsymbol{x}, \boldsymbol{y}) \ln p(\boldsymbol{y}) d\boldsymbol{x} d\boldsymbol{y} +  \int \int p(\boldsymbol{x},\boldsymbol{y})  \ln  {p(\boldsymbol{y}|\boldsymbol{x})} d\boldsymbol{x} d\boldsymbol{y},\\
+ &= - \int \int {p(\boldsymbol{y})} {p(\boldsymbol{x}|\boldsymbol{y})} \ln p(\boldsymbol{y}) d\boldsymbol{x} d\boldsymbol{y} +  \int \int p(\boldsymbol{x},\boldsymbol{y})  \ln {p(\boldsymbol{y}|\boldsymbol{x})} d\boldsymbol{x} d\boldsymbol{y}.
+\end{aligned}
+\label{eq:hw2form}
+\end{equation}
+By using the property,
+\begin{equation}
+\forall \boldsymbol{y}, \int p(\boldsymbol{x}|\boldsymbol{y}) d\boldsymbol{x} = 1,
+\end{equation}
+we can re-write the first term of the above equation with respect to $H[\boldsymbol{x}]$ at Equation \ref{eq:hx}, as
+\begin{equation}
+\begin{aligned}
+- \int \int {{p(\boldsymbol{x}|\boldsymbol{y})}{p(\boldsymbol{y})}} \ln p(\boldsymbol{y}) d\boldsymbol{x} d\boldsymbol{y}
+ &= - \int {p(\boldsymbol{y})} \ln p(\boldsymbol{y}) \left\lbrace \int {p(\boldsymbol{x}|\boldsymbol{y})}d\boldsymbol{x} \right\rbrace d\boldsymbol{y}\\
+ &= - \int {p(\boldsymbol{y})} \ln p(\boldsymbol{y}) d\boldsymbol{y}\\
+ &= H[\boldsymbol{y}].
+\end{aligned}
+\end{equation}
+The second term of Equation \ref{eq:hw2form} can be re-written with respect to $H[\boldsymbol{y}|\boldsymbol{x}]$ at Equation \ref{eq:hxy} as
+\begin{equation}
+\begin{aligned}
+\int \int p(\boldsymbol{x},\boldsymbol{y})  \ln  {p(\boldsymbol{y}|\boldsymbol{x})} d\boldsymbol{x} d\boldsymbol{y} &= - \left( - \int \int p(\boldsymbol{x},\boldsymbol{y})  \ln  {p(\boldsymbol{y}|\boldsymbol{x})} d\boldsymbol{x} d\boldsymbol{y} \right)\\
+&= - \left( - \int \int p(\boldsymbol{x},\boldsymbol{y})  \ln  {p(\boldsymbol{y}|\boldsymbol{x})} d\boldsymbol{y} d\boldsymbol{x} \right)\\
+&= - H[\boldsymbol{y}|\boldsymbol{x}].
+\end{aligned}
+\end{equation}
+Therefore, we get the results,
+\begin{equation}
+\begin{aligned}
+I[\boldsymbol{x}, \boldsymbol{y}] &= H[\boldsymbol{y}] - H[\boldsymbol{y}|\boldsymbol{x}].
+\end{aligned}
+\end{equation}
+Due to the symmetric form of $I[\boldsymbol{x},\boldsymbol{y}]$, by switching $\boldsymbol{x}$ and $\boldsymbol{y}$ at Equation \ref{eq:hw2form}, we can also get
+\begin{equation}
+\begin{aligned}
+I[\boldsymbol{x}, \boldsymbol{y}] &= I[\boldsymbol{y}, \boldsymbol{x}] \\
+&= H[\boldsymbol{x}] - H[\boldsymbol{x}|\boldsymbol{y}].
+\end{aligned}
+\end{equation}
+
+\pagebreak
+\section{Beta Distribution}
+From the definitions Beta distribution,
+\begin{equation}
+\begin{aligned}
+p(\mu) = {{\mu^{a-1} \left( 1- \mu \right)^{b-1}} \over {C(a,b)}},
+\end{aligned}
+\end{equation}
+where C(a,b) is the normalizing constant, given as
+\begin{equation}
+\begin{aligned}
+C(a,b) &= {\int_0^1 \mu^{a-1} \left( 1- \mu \right)^{b-1} d\mu},\\
+& = {{\Gamma (a) \Gamma (b)}\over{\Gamma (a+b)}}.
+\end{aligned}
+\end{equation}
+Then, $E(\mu)$ is given as,
+\begin{equation}
+\begin{aligned}
+E(\mu)
+ &= {\int_0^1 \mu p(\mu) d\mu}\\
+ &= {\int_0^1 \mu { {\mu^{a-1} \left( 1- \mu \right)^{b-1}} \over {C(a,b)}}d\mu}\\
+ &= {1\over {C(a,b)}} {\int_0^1 \mu^a \left( 1- \mu \right)^{b-1} d\mu}.
+\end{aligned}
+\label{eq:hw3form}
+\end{equation}
+
+The integration term of Equation \ref{eq:hw3form}, $\int_0^1 \mu^{a} \left( 1- \mu \right)^{b-1} d\mu$, also follows the cumulative distribution formulation of the Beta distribution. Therefore, we can further re-write Equation \ref{eq:hw3form} term as,
+\begin{equation}
+\begin{aligned}
+\int_0^1 \mu^a \left( 1- \mu \right)^{b-1} d\mu
+ &= \int_0^1 \mu^{(a+1)-1} \left( 1- \mu \right)^{b-1} d\mu\\
+ &= \int_0^1 \mu^{(a+1)-1} \left( 1- \mu \right)^{b-1} d\mu\\
+ & = {C(a+1, b)}\\
+ & = {{\Gamma (a+1) \Gamma (b)}\over{\Gamma (a+b+1)}}.
+ \end{aligned}
+\end{equation}
+By plugging the above term in Equation \ref{eq:hw3form}, we can re-write $E(\mu)$, as
+\begin{equation}
+\begin{aligned}
+E(\mu)
+ &={1\over {C(a,b)}}{\int_0^1 \mu^a \left( 1- \mu \right)^{b-1} d\mu}\\
+ &= {1\over {C(a,b)}} \times {{\Gamma (a+1) \Gamma (b)}\over{\Gamma (a+b+1)}}\\
+ &= {{\Gamma (a+b)}\over{\Gamma (a) \Gamma (b)}} \times {{\Gamma (a+1) \Gamma (b)}\over{\Gamma (a+b+1)}}\\
+ &= {{\Gamma (a+b)}\over{\Gamma (a) \Gamma (b)}} \times {{a\Gamma (a) \Gamma (b)}\over{(a+b) \Gamma (a+b)}}\\
+ &= {a \over{a+b}}.\\
+\end{aligned}
+\end{equation}
+
+\pagebreak
+\section{Support Vector Machines}
+Recall that the goal of a support vector machine (SVM) classifier is maximizing the geometric margin $\rho$, given data $\boldsymbol{x}_i$ with labels $y_i$,
+\begin{equation}
+\begin{aligned}
+\max_{\boldsymbol{w}, b} \rho = \min_{i} { { y_i (\boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + b)} \over { \norm{\boldsymbol{w}}} }.
+\end{aligned}
+\end{equation}
+Here, $i \in \left\lbrace 1, 2, ..., N \right\rbrace$, $N$ is the number of data, and ${\phi}(\cdot)$ is a kernel function that maps $\boldsymbol{x}_i$ into a hyperspace of more dimensions, and $b$ is the bias. By scaling as $\boldsymbol{w} \rightarrow \kappa \boldsymbol{w}$ and $b \rightarrow \kappa b$, we can get
+\begin{equation}
+\begin{aligned}
+\min_{i} { y_i (\boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + b)} = 1,
+\end{aligned}
+\end{equation}
+and re-formulate the problem as, 
+\begin{equation}
+\begin{aligned}
+&\max_{\boldsymbol{w}, b} \rho =   {{1} \over {\norm{\boldsymbol{w}}}} \\
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+&\text{s.t. } {y_i (\boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + b)} \leq 1.
+\end{aligned}
+\label{eq:const}
+\end{equation}
+Then, this optimization can be transformed as
+\begin{equation}
+\begin{aligned}
+&\max_{\boldsymbol{w}, b} \rho \Leftrightarrow  \min_{\boldsymbol{w}, b} {1 \over{\rho^2}}\Leftrightarrow \max_{\boldsymbol{w}, b} {1 \over 2} \norm{\boldsymbol{w}}^2
+\end{aligned}
+\label{eq:hw4form}
+\end{equation}
+where the same constraint of Equation \ref{eq:const} is given.
+
+By using the method of Lagrange multipliers, Equation \ref{eq:const}, \ref{eq:hw4form} are formulated, as
+\begin{equation}
+\begin{aligned}
+\min_{\boldsymbol{w}, b, \boldsymbol{\lambda}} L (\boldsymbol{w}, b, \boldsymbol{\lambda})
+\end{aligned}
+\end{equation}
+where
+\begin{equation}
+\begin{aligned}
+L (\boldsymbol{w}, b, \boldsymbol{\lambda}) = {1 \over 2} \norm{\boldsymbol{w}}^2 + \sum_{i=1}^{N} \lambda_i \left({y_i (\boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + b)} - 1\right).
+\end{aligned}
+\end{equation}
+The solutions of the problem are computed from the partial derivatives,
+\begin{equation}
+\begin{aligned}
+{{\partial L}\over{\partial \boldsymbol{w}}} = \boldsymbol{w} - \sum_{i=1}^{N} \lambda_i y_i {\phi} (\boldsymbol{x}_i) = 0,
+\end{aligned}
+\label{eq:con1}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+{{\partial L}\over{\partial b}} = - \sum_{i=1}^{N} \lambda_i y_i = 0.
+\end{aligned}
+\label{eq:con2}
+\end{equation}
+
+Also, a constrained optimization must satisfy the Karush-Kuhn-Tucker (KKT) conditions \cite{bishop}, which yields the conditions, 
+\begin{equation}
+\begin{aligned}
+\forall i, \quad & \lambda_i >0, \\
+& \lambda_i \left({y_i (\boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + b)} - 1\right) = 0.
+\end{aligned}
+\label{eq:kkt}
+\end{equation}
+By using Equation \ref{eq:kkt}, we can get the following equation,
+\begin{equation}
+\begin{aligned}
+\sum_{i=1}^{N} \lambda_i \left({y_i (\boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + b)} - 1\right)=0.
+\end{aligned}
+\end{equation}
+This yields
+\begin{equation}
+\begin{aligned}
+0 & = \sum_{i=1}^{N} \lambda_i y_i \boldsymbol{w}^\top {\phi} (\boldsymbol{x}_i) + \sum_{i=1}^{N} \lambda_i y_i b - \sum_{i=1}^{N}\lambda_i\\
+& = \boldsymbol{w}^\top \sum_{i=1}^{N} \lambda_i y_i {\phi} (\boldsymbol{x}_i) + b \sum_{i=1}^{N} \lambda_i y_i - \sum_{i=1}^{N} \lambda_i.
+\end{aligned}
+\end{equation}
+By plugging Equation \ref{eq:con1}, \ref{eq:con2} in the above equation, we can get
+\begin{equation}
+\begin{aligned}
+0 &= \boldsymbol{w}^\top \sum_{i=1}^{N} \lambda_i y_i {\phi} (\boldsymbol{x}_i) + b \sum_{i=1}^{N} \lambda_i y_i - \sum_{i=1}^{N}
+&= \boldsymbol{w}^\top \boldsymbol{w} + b \times 0 - \sum_{i=1}^{N} \lambda_i\\
+&= \norm{\boldsymbol{w}}^2 - \sum_{i=1}^{N} \lambda_i.
+\end{aligned}
+\end{equation}
+Thus, we can show that
+\begin{equation}
+\begin{aligned}
+\norm{\boldsymbol{w}}^2 = \sum_{i=1}^{N} \lambda_i.
+\end{aligned}
+\end{equation}
+
+\pagebreak
+\section{Gibbs Sampling}
+The Gaussian random variable $\nu$ is independent from ${z}_i$, and $E(\nu) = 0$. Therefore, we can get
+\begin{equation}
+E(\sigma_i \nu) = E(\sigma_i) E(\nu) = E(\sigma_i) \times 0 = 0. 
+\end{equation}
+Therefore, the expectiation of $ \acute{z}_i $ can be re-written, as
+\begin{equation}
+\begin{aligned}
+E(\acute{z}_i)
+ & = E\left(\mu_i + \alpha (z_i - \mu_i) +\sigma_i (1 - \alpha^2)^{{1}\over{2}}\nu \right)\\
+ & = (1-\alpha) E(\mu_i) + \alpha E(z_i) + (1 - \alpha^2)^{{1}\over{2}} E( \sigma_i \nu )\\
+ & = (1-\alpha) E(\mu_i) + \alpha E(z_i) +(1 - \alpha^2)^{{1}\over{2}} \times 0\\
+ & = (1-\alpha) E(\mu_i) + \alpha E(z_i).
+\end{aligned}
+\label{eq:hw5form}
+\end{equation}
+From the definition, $\mu_i = E(z_i)$. Also, $E(\mu_i) = \mu_i$.
+Thus, we can further simplify Equation \ref{eq:hw5form}, as
+\begin{equation}
+\begin{aligned}
+E(\acute{z}_i)
+ & = (1-\alpha) \mu_i + \alpha E(z_i)\\
+ & = (1-\alpha) \mu_i + \alpha \mu_i\\
+ & = \mu_i.
+\end{aligned}
+\end{equation}
+Therefore, the mean of $\acute{z}_i$ is also $\mu_i$.
+
+
+
+\begin{thebibliography}{9}
+\bibitem{bishop}
+Christopher M. Bishop (2006) \emph{Pattern Recognition and Machine Learning}, Springer.
+\end{thebibliography}
+
+\end{document}
