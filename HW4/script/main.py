@@ -98,7 +98,8 @@ eta = 1e-2
 
 ## Compute optimal hyperparameters, process local GP ##
 plt.figure(0)
-local_losses = []
+local_se_losses = []
+local_lh_losses = []
 
 for point in time_points:
     
@@ -168,15 +169,22 @@ for point in time_points:
     PXstar = np.exp(sigma_f)*np.exp(-0.5*np.exp(sigma_l)*XstarCov) + np.eye(N1)*np.exp(sigma_n) - KXstarX.dot(kpinv).dot(KXstarX.transpose())
 
     confidence_range = CONFIDENCE_STD_95 * np.sqrt(np.diagonal(PXstar))
-    loss = np.mean((Y-mXstar)**2)
+    se_loss = np.mean((Y-mXstar)**2)
 
-    local_losses.append(loss)
+    term1 = -1 / 2 * Y.T @ kpinv @ Y
+    term2 = -1 / 2 * np.log(np.linalg.det(kp))
+    term3 = N / 2 * np.log(2 * np.pi)
+    lh_loss = np.asscalar(term1 + term2 + term3)/N
+
+    local_se_losses.append(se_loss)
+    local_lh_losses.append(lh_loss)
 
     plt_mean, = plt.plot(Xstar, mXstar, color="k", label='Local GP mean', zorder=2)
     plt_error = plt.fill_between(Xstar.flatten(), mXstar.flatten()-confidence_range, mXstar.flatten()+confidence_range, facecolor='#089FFF', zorder=0, label='95% confidence')
     plt_data = plt.scatter(X.flatten(), Y.flatten(), s= 5, color = "r", label='Input data', zorder=1)
 
-local_losses = np.array(local_losses)
+local_se_losses = np.array(local_se_losses)
+local_lh_losses = np.array(local_lh_losses)
 
 plt.title('Local GP kernels')
 plt.xlabel('Frame')
@@ -213,7 +221,7 @@ for point in time_points:
     sigma_l_means.append(np.mean(sigma_l_vals[interval_start:interval_end]))
     sigma_n_means.append(np.mean(sigma_n_vals[interval_start:interval_end]))
 
-plt.figure(4)
+plt.figure(5)
 
 plt.plot(time_points, sigma_f_means, color="r", label='$\sigma_f$')
 plt.plot(time_points, sigma_l_means, color="g", label='$\sigma_l$')
@@ -234,7 +242,9 @@ plt.savefig("{}/interval.png".format(PATH_PLOT))
 plt.figure(2)
 means = {}
 devs = {}
+global_lh_losses = []
 
+print("Optimal hyperparameters for global GP")
 print("Sigma f: ", sigma_f)
 print("Sigma l: ", sigma_l)
 print("Sigma n: ", sigma_n)
@@ -285,6 +295,13 @@ for point in time_points:
     PXstar = np.exp(sigma_f-0.5*np.exp(sigma_l)*XstarCov)\
              + np.eye(N1)*np.exp(sigma_n) - KXstarX.dot(kpinv).dot(KXstarX.transpose())
 
+    term1 = -1 / 2 * Y.T @ kpinv @ Y
+    term2 = -1 / 2 * np.log(np.linalg.det(kp))
+    term3 = N / 2 * np.log(2 * np.pi)
+    lh_loss = np.asscalar(term1 + term2 + term3)/N
+
+    global_lh_losses.append(lh_loss)
+
     for idx in range(mXstar.shape[0]):
 
         if start_idx+idx not in means:
@@ -297,7 +314,8 @@ for point in time_points:
 
     plt_data = plt.scatter(X.flatten(), Y.flatten(), s= 5, color = "r", label='Input data', zorder=1)
 
-global_losses = []
+
+global_se_losses = []
 global_means = []
 global_confs = []
 for point in time_points:
@@ -307,7 +325,7 @@ for point in time_points:
     else:
         mean = np.mean(means[point])
         global_means.append(mean)
-        global_losses.append((mean-data[point,1])**2)
+        global_se_losses.append((mean-data[point,1])**2)
 
     if len(devs[point]) == 0: 
         global_confs.append(np.nan)
@@ -316,12 +334,13 @@ for point in time_points:
 
 global_means = np.array(global_means)
 global_confs = np.array(global_confs)
-global_losses = np.array(global_losses)
+global_se_losses = np.array(global_se_losses)
+global_lh_losses = np.mean(global_lh_losses)*np.ones(time_points.shape)
 
 plt_error = plt.fill_between(time_points, global_means-global_confs, global_means+global_confs, facecolor='#089FFF', zorder=0, label='95% confidence')
 plt_mean, = plt.plot(time_points, global_means, color="k", label='Global GP mean', zorder=2)
 
-plt.title('Global GP kernels')
+plt.title('Global GP kernel')
 plt.xlabel('Frame')
 plt.ylabel('Position [m]')
 plt.xlim([time_start, time_end-time_horizon])
@@ -329,13 +348,24 @@ plt.legend(handles=[plt_mean, plt_error, plt_data])
 plt.savefig("{}/global.png".format(PATH_PLOT))
 
 plt.figure(3)
-plt.plot(time_points, local_losses, color="r", label='Local GP loss')
-plt.plot(time_points, global_losses, color="b", label='Global GP loss')
-plt.title('Loss evaluation')
+plt.plot(time_points, local_se_losses, color="r", label='Local GP loss')
+plt.plot(time_points, global_se_losses, color="b", label='Global GP loss')
+plt.title('Loss evaluation (suqare error)')
 plt.xlabel('Frame')
 plt.ylabel('Square error [$m^2$]')
 plt.xlim([time_start, time_end-time_horizon])
 plt.legend()
-plt.savefig("{}/error.png".format(PATH_PLOT))
+plt.savefig("{}/square_error.png".format(PATH_PLOT))
+
+plt.figure(4)
+plt.plot(time_points, local_lh_losses.flatten(), color="r", label='Local GP loss')
+plt.plot(time_points, global_lh_losses.flatten(), color="b", label='Global GP loss')
+plt.title('Loss evaluation (log likelihood)')
+plt.xlabel('Frame')
+plt.ylabel('Log liklihood')
+plt.legend(loc='upper right')
+plt.xlim([time_start, time_end-time_horizon])
+plt.legend()
+plt.savefig("{}/log_likelihood.png".format(PATH_PLOT))
 
 plt.show()

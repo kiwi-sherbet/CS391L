@@ -40,43 +40,45 @@ Email: mingyo@utexas.edu}}
 
 \begin{abstract}
 In this assignment, an overview of Gaussian processes (GP) is presented and is applied to estimate a trajectory from human motions.
-We used a dataset of 5 different iterations of same motion and mixed signals to generate a single trajectory.
-In particular, we used an exponated RBF kernel for the trajectory processing.
-The regression was implemented by the gradient descent algorithm to maximize the negative log likelihood function, which outputs the optimal kernal hyperparameters.
-We also compared the use of a single global GP and a set of GP's fit to local data, and studied how the local GP's hyperparameters change.
-
+I used a dataset of 5 different iterations of the same motion and mixed signals to generate a single trajectory.
+In particular, I used an exponent RBF kernel for trajectory processing.
+The regression was implemented by the gradient ascent algorithm to maximize the negative log-likelihood function, which outputs the optimal kernel hyperparameters.
+I also compared the use of a single global GP and a set of GP's fit to local data and studied how the local GP's hyperparameters change.
 \end{abstract}
 
 \section{Introduction} % Introduce your problem and the overall plan for approaching your problem
 
-The problem of estimate a trajectory from multiple demonstration can be applied to many areas.
-In this paper, in particular, we implemented a Gaussian process(GP) model to estimate a trajectory from human demonstration. 
-GP is one of statistical parameter-free models.
+The problem of estimating a trajectory from multiple demonstrations can be applied to many areas.
+In this paper, in particular, I implemented a Gaussian process(GP) model to estimate a trajectory from human demonstration. 
+GP is one of the statistical parameter-free models.
 By using a GP model, we can predict and estimate a likelihood at any given dataset.
-We can consider a GP as an multi-dimensional Gaussian Probability density function (PDF).
-A GP is characterized by a set of the mean and variance functions.
-By sampling an finite or infinite dimensional PDF, we can regress the mean and variance functions, which is formulized as,
+We can consider a GP as a multi-dimensional Gaussian Probability density function (PDF).
+A GP is characterized by a set of mean and variance functions.
+By sampling a finite or infinite-dimensional PDF, we can regress the mean and variance functions, which is formulated as,
 \begin{equation}
 \begin{aligned}
     f \in \mathcal{N}(\mu(\boldsymbol{x}),V(\boldsymbol{x}))\ \text{sampled from PDF},\\
     \text{where} \quad \mu \in R^n,\ V\in R^n\times R^n.
 \end{aligned}
 \end{equation}
-For the implementation of GP, we used a mixed motion demonstration data from multiple datasets to estimate a motion trajcetory.
+For the implementation of GP, I used mixed motion demonstration data from multiple datasets to estimate a motion trajectory.
 
 The answers to the HW4 questions are included in the following sections.
 \begin{itemize}
-\item Fig. \ref{fig:signal}: Visualization of base, mixed, recovered signals
-\item Fig. \ref{fig:basic_test}, \ref{fig:basic_abs_test}, \ref{fig:batch_abs_test}, \ref{fig:eta_abs_test}, \ref{fig:sample_abs_test}: Correlation between source and recovered signals
+\item Fig. \ref{fig:global}: Pridiction of the motion data using a global kernel
+\item Fig. \ref{fig:local}: Prediction of motion data using local kernels
+\item Fig. \ref{fig:likelihood}, \ref{fig:square_error}: Performances of the global/local kernels
+\item Fig. \ref{fig:hyper}: Hyperparameter of local kernels at each frame 
+\item Tab. \ref{table:interval}: Intervals where the kernels cluster with similar\\
+\quad values
 \end{itemize}
-
 
 
 \section{Method}
 \label{sec:method}
 
 \subsection{Finite Gaussian Process}
-We assume that the prior distribution follows a Gaussian distribution of mean($m_f$) and identity Co-variance matrix($K_{ff}$), represented as,
+We assume that the prior distribution follows a Gaussian distribution of the mean($m_f$) and ithe dentity co-variance matrix($K_{ff}$), represented as,
 \begin{equation}
 \begin{aligned}
     &\quad f(\boldsymbol{x})\ \sim \ GP(m(x),\kappa(x,x')) \Leftrightarrow f \in \mathcal{N}(m_f,K_{ff}),
@@ -124,7 +126,7 @@ If there is no noise in the observed output $y$, then the best solution is $f=y$
     \label{eq:fstar}
 \end{aligned}
 \end{equation}
-In particular, we use an exponated RBF kernel to calculate the co-variance matrix $K$ and Gaussian noise to estimate raw data errors, given as
+In particular, we use an exponent RBF kernel to calculate the co-variance matrix $K$ and Gaussian noise to estimate raw data errors, given as
 \begin{equation}
 \begin{aligned}
     &y(u) = f(u) + \epsilon\\
@@ -150,7 +152,7 @@ Then, we can estimate $f_*$ for new values $X_*$ using equation \ref{eq:fstar}, 
 where $K(X_*,X) = \left[K(X,X_*)\right]^T$.
 The variance at each $x_*$ is given by the diagonal elements of $\mathbb{V}[f_*]$. 
 The standard deviations from these values can be used to compute the 95\% confidence interval at each $x_*$.
-Also, from $f_*$, we can also calculate the expectation and variance of the observations $y_*$. Since adding white noise does not change mean observation, the mean is given as,
+Also, from $f_*$, we can calculate the expectation and variance of the observations $y_*$. Since adding white noise does not change mean observation, the mean is given as,
 \begin{equation}
 \begin{aligned}
     \Bar{y_*} = \Bar{f_*}.
@@ -207,99 +209,144 @@ and the partial differentials are given as,
 
 \section{Results} % Describe the methods you intend to apply to solve the given problem
 
+In the assignment, I trained the GP model to estimate the trajectory from multiple demonstrations of the same task. 
+For the training process, I used the learning rate $\eta=0.01$ and the finite time-horizon of 50 frames. 
+For moving windows, I used the 5-frame stride.
+The set of the kernel hyperparameters was used for the initialization.
+\begin{equation}
+\begin{aligned}
+\sigma_f &= -1.9496\\
+\sigma_l &= -13.837\\
+\sigma_n &= -6.6605.
+\end{aligned}
+\end{equation}
 
-a starting point of $\Vec{\sigma}_0 = [-1,-8,-8]$ with $\eta=10^{-3}$ was stable for almost all data and markers in the experiment. The gradient ascent was stopped when the magnitude of the gradient fell below a tolerance value (tol), i.e. $||\Vec{\nabla}_\sigma(Q)||_1\ <\ tol$. A tolerance of 1 was found to best based on computation time and goodness of fit.
+For regression, I limited the maximum iteration of gradient ascent under $2,000$.
+To avoid divergence, I also terminated the gradient ascent process at each window if the magnitude of the gradient reached the limit under 1, as
+\begin{equation}
+\begin{aligned}
+	|| \left[ {\nabla}_\sigma (log P) \right]_{\sigma_i}  || < 1.
+	\label{eq:gradient ascent}
+\end{aligned}
+\end{equation}
 
-There is a strong negative correlation between the hyperparameters $sigma_f$ and $sigma_l$.
-When multiple dataset were mixed together to produce noisy data, then this negative correlation was not as apparent.
+In this assignment, I used the dataset of Subject \textit{YY} and Marker \textit{14\_x}.
+To avoid the effects of the raw data noise, we mixed the 5 demonstrations to generate a single trace data.
 
-
-The ICA implementation of using MLE and gradient descent described in Section \ref{sec:method} is implemented under the environment of python scripts (3.8.5) and numpy (1.17.5). The model is trained and evaluated by the sound dataset from the class website \cite{cs391}. We used random mixes of $n=3$ source signals from the dataset and initialized $W_0$ to be random matrices where each entry in $[0, 1]$.
-
-
-\subsection{Signal restoration}
-
-In the assignment, the performance of the model is evaluated by correlation between original signals and recovered signals. We paired a restored signal with the orignal signal that has the largest magnitude of correlation. In the experiment, we used $n=3$, $m=3$, $\eta=0.01$, $t=16$ and the maximum interation $k_{\text{max}} = 5000$.
-
-The source signals, the mixed signals, and the restored signals after $k_{\text{max}}$ are presented in Fig. \ref{fig:signal}.
-The plot of correlation between the source signals and the restored signals is presented in Fig. \ref{fig:basic_test}.
-
-Due to the semi-symmetric nature of waves, the largest correlation of Signal \#3 became negative, which implies that the extracted signal has the opposite phase of the original source signals. We use the plot of absolute correlation as Fig. \ref{fig:basic_abs_test} and find that correlation increase as an iteration number increases. For readability, we use absolute correlation for analyzing the effectiveness of the model in the following subchapters. Also, we can find that each source signal matches with the paired signals, which implies the ICA model successfully extracts original signals from mixed signals.
+\subsection{Kernels}
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{original.png}	
-	\includegraphics[width=3.6in]{mixed.png}	
-	\includegraphics[width=3.6in]{restored.png}	
-	\caption{Visualization of the signals: (upper) orignal signals, (middle) mixed signals, and (bottom) restored signals}
-	\label{fig:signal}
+	\includegraphics[width=3.6in]{local.png}	
+	\caption{Visualization of the local GP model at Subject \textit{YY} and Marker \textit{14\_x}.}
+	\label{fig:local}
+\end{figure}
+
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.6in]{global.png}	
+	\caption{Visualization of the global GP model at Subject \textit{YY} and Marker \textit{14\_x}.}
+	\label{fig:global}
+\end{figure}
+
+The GP model with the local kernel is presented in Figure \ref{fig:local}.
+The GP model with the global kernel is presented in Figure \ref{fig:global}.
+The optimal set of the hyperparameters used in the global kernel were computed as below,
+\begin{equation}
+\begin{aligned}
+\sigma_f &= -2.6004\\
+\sigma_l &= -12.206\\
+\sigma_n &= -6.5438.
+\end{aligned}
+\end{equation}
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.6in]{log_likelihood.png}	
+	\caption{Log-likelihood comparison between the local and global GPs.}
+	\label{fig:likelihood}
 \end{figure}
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{basic_test.png}	
-	\caption{Correlation between each source signal and the corresponding the restored signal.}
-	\label{fig:basic_test}
+	\includegraphics[width=3.6in]{square_error.png}	
+	\caption{Square error comparison between the local and global GPs.}
+	\label{fig:square_error}
 \end{figure}
+
+To compare the performance of the local GP model and the global GP model, I consider two metrics: log-likelihood, the target function of the gradient ascent, and square errors.
+The log-likelihood of the models is presented in Figure \ref{fig:likelihood}.
+In the plots, the global GP model has high likelihood values at the beginning of the process, but the local GP model shows higher likelihood values in most of the processes.
+From this, we can find that the local GP kernel is poorly initialized but becomes fitting well on the dataset as the regression is processed.
+On the other hand, from the square errors of the models, as presented in Figure \ref{fig:square_error}, the global GP model has larger variance and magnitude on square errors.
+This implies that the globally optimal kernel hyperparameters may not fit on the local data.
+Also, the results of better performance in the local GP models imply the correlation of the two different metrics.
+
+
+\subsection{Hyperparameters}
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{basic_abs_test.png}	
-	\caption{Correlation between each source signal and the corresponding the restored signal.}
-	\label{fig:basic_abs_test}
+	\includegraphics[width=3.6in]{hyper.png}	
+	\caption{Hyperparameters of the local GP model.}
+	\label{fig:hyper}
 \end{figure}
 
-\subsection{Batch size}
-
-The plot of absolute correlation at different batch sizes $t$ is presented in Fig. \ref{fig:batch_abs_test}.
-In the experiment, we used $n=3$, $m=3$, $\eta=0.01$, and $k_{\text{max}} = 5000$.
-From the results, we can find that the correlation increases fastest at the batch size $k=32$. In a larger batch size, there is a negligible drop at the speed of correlation magnitude increases. On the other hand, a batch size causes a significant drop, which implies that the model suffers from a lack of sample information.
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.6in]{batch_abs_test.png}	
-	\caption{Absolute correlation changes on batch size: batch sample sizes are chosen in [4, 8, 16, 32, 64, 128, 256].}
-	\label{fig:batch_abs_test}
+	\includegraphics[width=3.6in]{interval.png}	
+	\caption{Correlation between each source signal and the corresponding the restored signal}
+	\label{fig:interval}
 \end{figure}
 
+\begin{table}
+\caption{Intervals with similar values}
+ 	\label{table:interval}
+\begin{tabular}{ |p{1.5cm}||p{1.2cm}|p{1cm}|p{1cm}|p{1cm}|  }
+ \hline
+ Interval ID & Frame & $\sigma_f$ & $\sigma_l$ & $\sigma_n$\\
+ \hline
+	1 & 0-50 	&		&		&		\\
+	2 & 50-100 	&		&		&		\\
+	3 & 100-150 & 3-6 	&		&		\\
+	4 & 150-200 & 3-6 	& 4-7 	&		\\
+	5 & 200-250 & 3-6 	& 4-7 	&		\\
+	6 & 250-300 & 3-6 	& 4-7 	&		\\
+	7 & 300-350 &		& 4-7 	&		\\
+	8 & 350-400 &		&		&		\\
+	9 & 400-450 &		&		&		\\
+	10 & 450-500 &		& 10-11 &		\\
+	11 & 500-550 & 11-13 & 10-11 & 11-13\\
+	12 & 550-600 & 11-13 &		& 11-13\\
+	13 & 600-650 & 11-13 &		& 11-13\\
+	14 & 650-700 &		 &		&		\\
+	15 & 700-750 &		 &		&		\\
+	16 & 750-800 & 16-20 &		& 16-20 \\
+	17 & 800-850 & 16-20 &		& 16-20 \\
+	18 & 850-900 & 16-20 & 18-19 & 16-20 \\
+	19 & 900-950 & 16-20 & 18-19 & 16-20 \\
+	20 & 950-1000 & 16-20 &		& 16-20 \\
+ \hline
+\end{tabular}
+\end{table}
 
-\subsection{Learning rate}
-
-The plot of absolute correlation at different learning rates $\eta$ is presented in Fig. \ref{fig:eta_abs_test}.
-In the experiment, we used $n=3$, $m=3$, $t=16$, and $k_{\text{max}} = 5000$.
-From the results, we can find that a higher learning rate yields faster. However, an excessively high learning rate prevents the convergence at gradient descent, which causes unstable performance, such as perturbations in correlation remaining even after enough iterations.
-
-\begin{figure}[!t]
-	\centering
-	\includegraphics[width=3.6in]{eta_abs_test.png}	
-	\caption{Absolute correlation changes on learning rate: learning rates are chosen in [0.005, 0.01, 0.02, 0.05, 0.1, 0.2].}
-	\label{fig:eta_abs_test}
-\end{figure}
-
-
-
-\subsection{Sample size}
-
-The plot of absolute correlation at different sample signal numbers $m$ is presented in Fig. \ref{fig:sample_abs_test}.
-In the experiment, we used $n=3$, $t=16$, $\eta=0.01$, and $k_{\text{max}} = 5000$.
-From the result at $m=2$, we can find that the model fails to restore Signal \#1. This implies that a smaller sample number than the given source signal number, $m<n$, causes the dimension issue at the unmixing $W$, where the model cannot fully extract the original signals.
-
-\begin{figure}[!t]
-	\centering
-	\includegraphics[width=3.6in]{sample_abs_test.png}	
-	\caption{Absolute correlation changes on sample sizes: sample sizes are chosen in [2, 3, 4, 5].}
-	\label{fig:sample_abs_test}
-\end{figure}
-
+The kernel hyperparameters of the local GP model are presented in Figure \ref{fig:hyper}.
+For the analysis of intervals with similar values, I visualized the means of the hyperparameters at each interval in Figure \ref{fig:interval}.
+In Table \ref{table:interval}, intervals with similar values are represented with interval IDs.
+In particular, we can find that $\sigma_f$ and $\sigma_n$ have shared intervals, which implies those two parameters are correlated. 
+Also, in the Interval 18-19 (Frame 850-950), where the trajectory in Figure \ref{fig:local} does not change aggressively, all the parameters have similar values.
+From this result, we can confirm that kernel hyperparameters highly depend on the characteristics of trajectories.
 
 \section{Summary} %Intermediate/Preliminary Results: State and evaluate your results upeto the milestone
 
-The GP model and gradient descent for regressing the model from raw motion data are implemented in the assignment. 
-For training, we mixed 5 human motion dataset of the same task demonstration and estimated the trajectory by regressing the GP model.
-By the regression, we optimized the optimal set of hyperparamters for the finite GP kenel from the given data.
-From the results of the experiments, we can confirmed that a sliding window kernel is able to fit the given data more accurately than a global kernel function.
-This is verified by taking the mean of the log-likelihood and square errors over all the points it spans.
-
+The GP model and gradient ascent for regressing the model from raw motion data are implemented in the assignment. 
+For training, I mixed 5 human motion datasets of the same task demonstration and estimated the trajectory by regressing the GP model.
+By the regression, I optimized the optimal set of hyperparameters for the finite GP kernel from the given data.
+From the results of the experiments, we can confirm that a sliding window kernel can fit the given data more accurately than a global kernel function.
+This is verified by taking the mean of log-likelihood and square errors over all the points it spans.
+Also, we confirmed that local kernels have similar hyperparameters when the behavior of the motion data does not change aggressively.
 %\section*{Acknowledgments}
 
 %% Use plainnat to work nicely with natbib. 
