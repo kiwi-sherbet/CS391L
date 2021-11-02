@@ -1,0 +1,10 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Method}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Finite Gaussian Process}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{GP Hyperparameter regression}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Results}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Signal restoration}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Batch size}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Learning rate}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.4}{Sample size}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Summary}{}% 10
