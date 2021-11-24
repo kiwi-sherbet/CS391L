@@ -1,0 +1,13 @@
+1. Write, review, and submit a brief report containing your plots and detailing what you did and how well it worked. -- 2 points (Introduction, Method, Results, Summary, etc.)
+
+2. Method section: please describe the strategy for each module in detail -- 2 points
+
+3. Plot figures showing "litter" module -- 1 point
+
+4. Plot figures showing "obstacles" module -- 1 point
+
+5. Plot figures showing "staying on the sidewalk" module -- 1 point
+
+6. Plot figures showing "forth" module -- 1 point
+
+7. Plot figures showing final module (the combination of the 4 individual modules) -- 2 points
