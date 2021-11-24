@@ -325,8 +325,8 @@ Also, the results of better performance in the local GP models imply the correla
 	15 & 700-750 &		 &		&		\\
 	16 & 750-800 & 16-20 &		& 16-20 \\
 	17 & 800-850 & 16-20 &		& 16-20 \\
-	18 & 850-900 & 16-20 & 18-19 & 16-20 \\
-	19 & 900-950 & 16-20 & 18-19 & 16-20 \\
+	18 & 850-900 & 16-20 & 		& 16-20 \\
+	19 & 900-950 & 16-20 & 		& 16-20 \\
 	20 & 950-1000 & 16-20 &		& 16-20 \\
  \hline
 \end{tabular}
@@ -335,9 +335,10 @@ Also, the results of better performance in the local GP models imply the correla
 The kernel hyperparameters of the local GP model are presented in Figure \ref{fig:hyper}.
 For the analysis of intervals with similar values, I visualized the means of the hyperparameters at each interval in Figure \ref{fig:interval}.
 In Table \ref{table:interval}, intervals with similar values are represented with interval IDs.
-In particular, we can find that $\sigma_f$ and $\sigma_n$ have shared intervals, which implies those two parameters are correlated. 
-Also, in the Interval 18-19 (Frame 850-950), where the trajectory in Figure \ref{fig:local} does not change aggressively, all the parameters have similar values.
+We can find that $\sigma_f$ and $\sigma_n$ have shared intervals, which implies those two parameters are correlated. 
+In particular, in the Interval 16-20 (Frame 750-1000), where the trajectory in Figure \ref{fig:local} does not change aggressively, all the parameters have similar values.
 From this result, we can confirm that kernel hyperparameters highly depend on the characteristics of trajectories.
+In the dataset used in the assignment, there were no intervals where all the hyperparameters have similar values.
 
 \section{Summary} %Intermediate/Preliminary Results: State and evaluate your results upeto the milestone
 
